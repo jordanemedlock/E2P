@@ -1,14 +1,15 @@
 from collections import namedtuple
+from random import random
 
 TEMPERATURE_PIN = 20
 SOIL_HUM_PIN = 21
 CAMERA_NUMBER = 0
 
 def get_temperature_and_humidity():
-    return 0, 0
+    return random() * 30, random() * 100
 
 def get_soil_humidity():
-    return 0
+    return random() * 100
 
 def get_image():
     return None

@@ -5,20 +5,44 @@ from uuid import uuid4
 
 tz = pytz.timezone("America/Los_Angeles")
 
-def cycle_on_off(s, func, frac_on, frequency):
+seconds = 1
+
+minutes = 60 * seconds
+
+hours = 60 * minutes
+
+days = 24 * hours
+
+def cycle(s, func, time_diff, priority=5, args=(), kwargs={}):
     cycle_id = str(uuid4())
-    on_time = frequency * frac_on
-    off_time = frequency * (1 - frac_on)
+    def call_func(*args, **kwargs):
+        s.enter(time_diff, priority, call_func, args, kwargs)
+        func(*args, **kwargs)
+
+    kwargs['cycle_id'] = cycle_id
+    call_func(*args, **kwargs)
+
+    return cycle_id
+
+def every(s, time_diff, func, priority=5, args=(), kwargs={}):
+    return cycle(s, func, time_diff, priority=5, args=args, kwargs=kwargs)
+
+
+def cycle_on_off(s, func, frac_on, time_diff, priority=5, args=(), kwargs={}):
+    cycle_id = str(uuid4())
+    on_time = time_diff * frac_on
+    off_time = time_diff * (1 - frac_on)
 
     def turn_on(*args, **kwargs):
+        s.enter(on_time, 2, turn_off, arguments=args, kwargs=kwargs)
         func(True)
-        s.enter(on_time, 2, turn_off, kwargs={'cycle_id': cycle_id})
 
     def turn_off(*args, **kwargs):
+        s.enter(off_time, 2, turn_on, arguments=args, kwargs=kwargs)
         func(False)
-        s.enter(off_time, 2, turn_on, kwargs={'cycle_id': cycle_id})
 
-    turn_on()
+    kwargs['cycle_id'] = cycle_id
+    turn_on(*arguments, **kwargs)
 
     return cycle_id
 
@@ -34,7 +58,7 @@ def stop_cycle(s, cycle_id):
     return False
 
 
-def at_time(s, task, time_of_day, priority=5, arguments=(), kwargs={}):
+def at_time(s, task, time_of_day, priority=5, args=(), kwargs={}):
     global tz
     today = dt.date.today()
     now = dt.datetime.now()
@@ -44,16 +68,22 @@ def at_time(s, task, time_of_day, priority=5, arguments=(), kwargs={}):
         possible = dt.datetime.combine(tomorrow, time_of_day)
 
     t = time.mktime(possible.timetuple())
-    return s.enterabs(t, priority, task, argument=arguments, kwargs=kwargs)
+    return s.enterabs(t, priority, task, argument=args, kwargs=kwargs)
 
-def daily(s, task, time_of_day, priority=5, arguments=(), kwargs={}):
+def daily(s, task, time_of_day, priority=5, args=(), kwargs={}):
     def tick(*args, **kwargs):
         task(*args, **kwargs)
         at_time(s, tick, time_of_day, priority, args, kwargs)
 
     kwargs['cycle_id'] = str(uuid4())
-    at_time(s, tick, time_of_day, priority, arguments, kwargs)
+    at_time(s, tick, time_of_day, priority, args, kwargs)
 
+
+def run_after(s, time_diff, task, priority=5, args=(), kwargs={}):
+    cycle_id = str(uuid4())
+    kwargs['cycle_id'] = cycle_id
+    s.enter(time_diff, priority, task, args, kwargs)
+    return cycle_id
 
 
 

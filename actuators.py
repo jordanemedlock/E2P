@@ -1,6 +1,6 @@
 from collections import namedtuple
 from uuid import uuid4
-from timer_utils import cycle_on_off
+from timer_utils import *
 
 def set_led_state(state):
     print('LED state set to: ' + str(state))
@@ -28,4 +28,8 @@ def cycle_fan(scheduler, frac_on, frequency):
 def cycle_pump(scheduler, frac_on, frequency):
     return cycle_on_off(scheduler, set_pump_state, frac_on, frequency)
 
-
+def turn_pump_on_for(s, time):
+    set_pump_state(True)
+    def stop(*args, **kwargs):
+        set_pump_state(False)
+    return run_after(s, time, stop)

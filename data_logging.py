@@ -2,6 +2,9 @@
 import datetime
 import os
 import re
+from timer_utils import tz
+from collections import namedtuple, OrderedDict
+
 
 file_format = '{title}_{date}_{num}.csv'
 regex_file_format = file_format.replace('.','\\.')
@@ -9,9 +12,13 @@ folder = 'data'
 sep = ','
 
 class FileLogger():
-    def __init__(self, title, headers=[]):
+    def __init__(self, title, add_time=True, headers=[]):
         self.title = title
-        self.headers = headers
+        self.add_time = add_time
+        if hasattr(headers, '_fields'):
+            self.headers = list(headers._fields)
+        else:
+            self.headers = headers
 
     def get_today(self):
         today = datetime.date.today()
@@ -41,12 +48,20 @@ class FileLogger():
             data_list = data
         elif isinstance(data, str):
             data_list = [data]
+        elif hasattr(data, '_asdict'):
+            data_list = list(data._asdict().values())
         else:
             print('data is unrecognized type')
             return
 
+        if self.add_time:
+            now = datetime.datetime.now(tz)
+            data_list = [now] + data_list
         line = sep.join(str(i) for i in data_list) + '\n'
         self.file.write(line)
+        self.file.flush()
+        # location_in_file=self.file.seek(0, 1)
+        # print(location_in_file)
 
 
 
@@ -54,8 +69,13 @@ class FileLogger():
         new_filename = self.get_new_filename()
         print('started logging to', new_filename)
         self.file = open(new_filename, 'a')
+        headers_list = []
         if self.headers:
-            line = sep.join(self.headers) + '\n'
+            headers_list = self.headers
+        if self.add_time:
+            headers_list = ['time'] + headers_list
+        if headers_list:
+            line = sep.join(headers_list) + '\n'
             self.file.write(line)
         return self
 
