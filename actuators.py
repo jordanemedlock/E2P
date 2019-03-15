@@ -2,34 +2,46 @@ from collections import namedtuple
 from uuid import uuid4
 from timer_utils import *
 
-def set_led_state(state):
-    print('LED state set to: ' + str(state))
+def Actuator():
+    def set_state(self, state):
+        pass
 
-def set_fan_state(state):
-    print('fan state set to: ' + str(state))
+def RelayControlled(Actuator):
+    def __init__(self, pin):
+        self.pin = pin
 
-def set_pump_state(state):
-    print('pump state set to: ' + str(state))
+    def set_state(self, state):
+        pass
 
-class ActuatorsState(namedtuple('ActuatorsState', ['led', 'fan', 'pump'])):
+    def turn_on(self):
+        self.set_state(True)
+
+    def turn_off(self):
+        self.set_state(False)
+
+    def change_to_for(self, s, time, state):
+        self.set_state(state)
+        def stop(*args, **kwargs):
+            self.set_state(not state)
+        return run_after(s, time, stop)
+
+    def turn_on_for(self, s, time):
+        return self.change_to_for(s, time, True)
+
+    def turn_off_for(self, s, time):
+        return self.change_to_for(s, time, False)
+
+    def cycle(self, s, frac_on, duration):
+        return cycle_on_off(s, self.set_state, frac_on, duration)
+
+
+
+
+def LEDs(RelayControlled):
     pass
 
-def set_actuators_state(actuators_state):
-    set_led_state(actuators_state.led)
-    set_fan_state(actuators_state.fan)
-    set_pump_state(actuators_state.pump)
+def Fan(RelayControlled):
+    pass
 
-def cycle_led(scheduler, frac_on, frequency):
-    return cycle_on_off(scheduler, set_led_state, frac_on, frequency)
-
-def cycle_fan(scheduler, frac_on, frequency):
-    return cycle_on_off(scheduler, set_fan_state, frac_on, frequency)
-
-def cycle_pump(scheduler, frac_on, frequency):
-    return cycle_on_off(scheduler, set_pump_state, frac_on, frequency)
-
-def turn_pump_on_for(s, time):
-    set_pump_state(True)
-    def stop(*args, **kwargs):
-        set_pump_state(False)
-    return run_after(s, time, stop)
+def Pump(RelayControlled):
+    pass
