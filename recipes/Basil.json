@@ -1,0 +1,8 @@
+{
+  "py/object": "__main__.Recipe",
+  "description": "Grows basil pretty well idk",
+  "light_frac": 0.5,
+  "name": "Basil",
+  "soil_humidity": 25,
+  "temperature": 25
+}

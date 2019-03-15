@@ -70,7 +70,7 @@ def at_time(s, task, time_of_day, priority=5, args=(), kwargs={}):
     t = time.mktime(possible.timetuple())
     return s.enterabs(t, priority, task, argument=args, kwargs=kwargs)
 
-def daily(s, task, time_of_day, priority=5, args=(), kwargs={}):
+def every_day_at(s, time_of_day, task, priority=5, args=(), kwargs={}):
     def tick(*args, **kwargs):
         task(*args, **kwargs)
         at_time(s, tick, time_of_day, priority, args, kwargs)

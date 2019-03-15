@@ -8,8 +8,7 @@ from data_logging import FileLogger
 
 last_sensor_state = None
 
-target_temp = 25
-target_soil_humidity = 50
+
 
 def read_sensors(logger, *args, **kwargs):
     global last_sensor_state
@@ -31,11 +30,15 @@ def add_water(*args, **kwargs):
         turn_pump_on_for(s, 1*seconds)
 
 
+def main():
 
-s = scheduler(time.time, time.sleep)
+    s = scheduler(time.time, time.sleep)
 
-with FileLogger('sensors', headers=SensorsState) as logger:
-    every(s, 5*seconds, read_sensors, args=(logger,), priority=1)
-    every(s, 5*seconds, cool_box, priority=2)
-    every(s, 10*seconds, add_water, priority=2)
-    s.run()
+    with FileLogger('sensors', headers=SensorsState) as logger:
+        every(s, 5*seconds, read_sensors, args=(logger,), priority=1)
+        every(s, 5*seconds, cool_box, priority=2)
+        every(s, 10*seconds, add_water, priority=2)
+        s.run()
+
+if __name__ == '__main__':
+    main()
