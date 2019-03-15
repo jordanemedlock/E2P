@@ -5,6 +5,7 @@ from timer_utils import *
 import datetime
 from sensors import *
 from data_logging import FileLogger
+import recipes.basil
 
 last_sensor_state = None
 
@@ -41,4 +42,10 @@ def main():
         s.run()
 
 if __name__ == '__main__':
-    main()
+    s = scheduler(time.time, time.sleep)
+
+    for x in recipes.basil.run(s):
+        s.run()
+        print(x)
+
+

@@ -2,32 +2,30 @@ from collections import namedtuple
 from random import random
 
 
-def Sensor():
+class Sensor():
     def sense(self):
         pass
 
-def TemperatureAndHumidity(Sensor):
+class GPIOSensor(Sensor):
     def __init__(self, pin):
         self.pin = pin
 
+class TemperatureAndHumidity(GPIOSensor):
     def sense(self):
         return random() * 30, random() * 100
 
-def SoilHumidity(Sensor):
-    def __init__(self, pin):
-        self.pin = pin
-
+class SoilHumidity(GPIOSensor):
     def sense(self):
         return random() * 100
 
-def Camera(Sensor):
+class Camera(Sensor):
     def __init__(self, number):
         self.number = number
 
     def sense(self):
         return None
 
-def SensorHub():
+class SensorHub():
     def __init__(self):
         self.temp_and_hum = TemperatureAndHumidity(TEMPERATURE_PIN)
         self.soil_humidity = SoilHumidity(SOIL_HUM_PIN)
@@ -72,22 +70,3 @@ def SensorHub():
 TEMPERATURE_PIN = 20
 SOIL_HUM_PIN = 21
 CAMERA_NUMBER = 0
-
-def get_temperature_and_humidity():
-    return random() * 30, random() * 100
-
-def get_soil_humidity():
-    return random() * 100
-
-def get_image():
-    return None
-
-class SensorsState(namedtuple('SensorsState', ['temperature', 'humidity', 'soil_humidity', 'image'])):
-    pass
-
-def get_sensor_state():
-    t, h = get_temperature_and_humidity()
-    sh = get_soil_humidity()
-    i = get_image()
-    return SensorsState(t, h, sh, i)
-

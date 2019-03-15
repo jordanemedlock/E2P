@@ -2,11 +2,11 @@ from collections import namedtuple
 from uuid import uuid4
 from timer_utils import *
 
-def Actuator():
+class Actuator():
     def set_state(self, state):
         pass
 
-def RelayControlled(Actuator):
+class RelayControlled(Actuator):
     def __init__(self, pin):
         self.pin = pin
 
@@ -37,11 +37,11 @@ def RelayControlled(Actuator):
 
 
 
-def LEDs(RelayControlled):
+class LEDs(RelayControlled):
     pass
 
-def Fan(RelayControlled):
+class Fan(RelayControlled):
     pass
 
-def Pump(RelayControlled):
+class Pump(RelayControlled):
     pass

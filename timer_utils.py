@@ -87,6 +87,11 @@ def run_after(s, time_diff, task, priority=5, args=(), kwargs={}):
 
 
 
+def after(s, time_diff, task, priority=5, args=(), kwargs={}):
+    cycle_id = str(uuid4())
+    kwargs['cycle_id'] = cycle_id
+    s.enter(time_diff, priority, task, args, kwargs)
+    return cycle_id
 
 
 
