@@ -2,13 +2,6 @@ import json
 from collections import namedtuple
 import jsonpickle
 
-recipe_super = namedtuple('Recipe', [
-    'name', 
-    'description', 
-    'temperature', 
-    'soil_humidity', 
-    'light_frac'
-])
 
 class Recipe():
     def __init__(self, name, description, temperature, soil_humidity, light_frac):
