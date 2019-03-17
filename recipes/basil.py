@@ -7,9 +7,9 @@ from sensors import TemperatureAndHumidity, SoilHumidity, Camera
 from data_logging import FileLogger
 import datetime
 
-leds = LEDs(2)
-fan = Fan(3)
-pump = Pump(4)
+leds = LEDs(2, active_high=False)
+fan = Fan(3, active_high=False)
+pump = Pump(4, active_high=False)
 temp_and_hum = TemperatureAndHumidity(20)
 soil = SoilHumidity(20)
 camera = Camera(20)
@@ -43,8 +43,8 @@ def regulate_temperature(*args, **kwargs):
 def water_plant(s, *args, **kwargs):
     global last_measurements, pump
     if last_measurements['soil_humidity'] < target_soil_hum:
-        pump.turn_on_for(s, 10*seconds)
-        after(s, 10*minutes, water_plant, args=(s,))
+        pump.turn_on_for(s, 1*seconds)
+        after(s, 10*seconds, water_plant, args=(s,))
 
 def turn_on_lights(*args, **kwargs):
     leds.turn_on()
@@ -56,8 +56,8 @@ def run(s):
 
     file_logger = FileLogger('basil', headers=['temperature', 'humidity', 'soil_humidity'])
     with file_logger:
-        every(s, 5*minutes, log_sensors, args=(file_logger,))
-        every(s, 5*minutes, regulate_temperature)
+        every(s, 5*seconds, log_sensors, args=(file_logger,))
+        every(s, 5*seconds, regulate_temperature)
 
         every_day_at(s, datetime.time(20, 0, 0), water_plant, args=(s,))
 
