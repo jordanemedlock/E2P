@@ -1,17 +1,34 @@
 from collections import namedtuple
 from uuid import uuid4
 from timer_utils import *
+try:
+    import gpiozero
+except:
+    print('gpiozero doesnt exist, mocking instead')
+    gpioMock = namedtuple('gpioMock', ['LED'])
+    class MockLED():
+        def __init__(self, pin, active_high=True):
+            self.pin = pin
+        def on(self):
+            print('turning on pin: ', self.pin)
+        def off(self):
+            print('turning off pin: ', self.pin)
+    gpiozero = gpioMock(MockLED)
+
 
 class Actuator():
     def set_state(self, state):
         pass
 
 class RelayControlled(Actuator):
-    def __init__(self, pin):
-        self.pin = pin
+    def __init__(self, pin, active_high=True):
+        self.output = gpiozero.LED(pin, active_high=active_high)
 
     def set_state(self, state):
-        pass
+        if state:
+            self.output.on()
+        else:
+            self.output.off()
 
     def turn_on(self):
         self.set_state(True)
