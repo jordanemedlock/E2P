@@ -7,9 +7,9 @@ from sensors import TemperatureAndHumidity, SoilHumidity, Camera
 from data_logging import FileLogger
 import datetime
 
-leds = LEDs(20)
-fan = Fan(20)
-pump = Pump(20)
+leds = LEDs(2)
+fan = Fan(3)
+pump = Pump(4)
 temp_and_hum = TemperatureAndHumidity(20)
 soil = SoilHumidity(20)
 camera = Camera(20)
